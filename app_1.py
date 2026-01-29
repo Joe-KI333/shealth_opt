@@ -3,8 +3,6 @@ import cv2
 import numpy as np
 import zipfile
 import io
-from tempfile import TemporaryDirectory
-import os
 from PIL import Image
 
 # ─────────────────────────────
@@ -37,6 +35,7 @@ POLYGONS_MASKING_2 = [
 st.session_state.setdefault("mask_reference", "Masking1 (Reference 1)")
 st.session_state.setdefault("zip_ready", False)
 st.session_state.setdefault("uploader_key", 0)
+st.session_state.setdefault("zip_buffer", None)
 
 # ─────────────────────────────
 # Mask Reference Dropdown
@@ -66,7 +65,7 @@ with tab2:
 st.divider()
 
 # ─────────────────────────────
-# Upload Images (DYNAMIC KEY)
+# Upload Images (Dynamic Key)
 # ─────────────────────────────
 uploaded_files = st.file_uploader(
     "Upload Image(s)",
@@ -76,28 +75,28 @@ uploaded_files = st.file_uploader(
 )
 
 # ─────────────────────────────
-# Remove Uploaded Images (FIXED)
+# Remove Uploaded Images
 # ─────────────────────────────
 if uploaded_files:
     if st.button("🗑️ Remove Uploaded Images"):
         st.session_state.uploader_key += 1
         st.session_state.zip_ready = False
-        # ❌ NO st.rerun() here
+        st.session_state.zip_buffer = None
 
 # ─────────────────────────────
-# Apply Mask
+# Apply Mask (IN-MEMORY ONLY)
 # ─────────────────────────────
 if uploaded_files and st.button("🚀 Apply Mask & Prepare ZIP"):
-    with TemporaryDirectory() as temp_dir:
-        output_dir = os.path.join(temp_dir, "output")
-        os.makedirs(output_dir, exist_ok=True)
 
-        polygons = (
-            POLYGONS_MASKING_1
-            if "Masking1" in st.session_state.mask_reference
-            else POLYGONS_MASKING_2
-        )
+    polygons = (
+        POLYGONS_MASKING_1
+        if "Masking1" in st.session_state.mask_reference
+        else POLYGONS_MASKING_2
+    )
 
+    zip_buffer = io.BytesIO()
+
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
         for file in uploaded_files:
             file_bytes = np.asarray(bytearray(file.read()), dtype=np.uint8)
             img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
@@ -106,22 +105,28 @@ if uploaded_files and st.button("🚀 Apply Mask & Prepare ZIP"):
                 st.warning(f"❌ Could not read {file.name}")
                 continue
 
+            # Apply polygon mask
             cv2.fillPoly(img, polygons, color=(0, 0, 255))
-            cv2.imwrite(os.path.join(output_dir, f"masked_{file.name}"), img)
 
-        zip_buffer = io.BytesIO()
-        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
-            for f in os.listdir(output_dir):
-                zipf.write(os.path.join(output_dir, f), arcname=f)
+            # Encode image directly to memory
+            success, encoded_img = cv2.imencode(".png", img)
+            if not success:
+                st.warning(f"❌ Encoding failed for {file.name}")
+                continue
 
-        zip_buffer.seek(0)
-        st.session_state.zip_ready = True
-        st.session_state.zip_buffer = zip_buffer
+            zipf.writestr(
+                f"masked_{file.name}",
+                encoded_img.tobytes()
+            )
+
+    zip_buffer.seek(0)
+    st.session_state.zip_ready = True
+    st.session_state.zip_buffer = zip_buffer
 
 # ─────────────────────────────
-# Download ZIP (FIXED)
+# Download ZIP + Reset
 # ─────────────────────────────
-if st.session_state.zip_ready:
+if st.session_state.zip_ready and st.session_state.zip_buffer is not None:
     st.success(f"✅ Masking completed using **{st.session_state.mask_reference}**")
 
     if st.download_button(
@@ -130,6 +135,7 @@ if st.session_state.zip_ready:
         file_name="masked_images.zip",
         mime="application/zip"
     ):
+        # Reset uploader cleanly
         st.session_state.uploader_key += 1
         st.session_state.zip_ready = False
-        # ❌ NO st.rerun() here
+        st.session_state.zip_buffer = None
