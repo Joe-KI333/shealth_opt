@@ -56,11 +56,11 @@ tab1, tab2 = st.tabs(["Reference 1", "Reference 2"])
 
 with tab1:
     st.subheader("Reference 1 – Polygon Masking Example")
-    st.image("masking1.png", use_column_width=True)
+    st.image("Masking1.png", use_column_width=True)
 
 with tab2:
     st.subheader("Reference 2 – Polygon Masking Example")
-    st.image("masking2.png", use_column_width=True)
+    st.image("Masking2.png", use_column_width=True)
 
 st.divider()
 
