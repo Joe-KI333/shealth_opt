@@ -30,16 +30,18 @@ st.write("**Masking1** and **Masking2** polygon configurations.")
 # ]
 
 # POLYGONS_MASKING_1 → test ff ratio
+# # test ff ratio
 POLYGONS_MASKING_1 = [
-    np.array([[87, 4], [478, 1], [476, 23], [85, 27]], dtype=np.int32),
-    np.array([[564, 5], [564, 30], [951, 30], [955, 1]], dtype=np.int32)
+    np.array([[1005, 9], [999, 55], [185, 55], [185, 3]], dtype=np.int32),
+    np.array([[1181, 9], [1181, 55], [1995, 55], [1995, 9]], dtype=np.int32)
 ]
 
-# POLYGONS_MASKING_2 → test oct ratio
+# test oct ratio
 POLYGONS_MASKING_2 = [
-    np.array([[685, 1], [682, 36], [126, 36], [126, 4]], dtype=np.int32),
-    np.array([[807, 2], [807, 36], [1361, 36], [1361, 5]], dtype=np.int32)
+    np.array([[1054, 6], [1054, 56], [194, 56], [194, 2]], dtype=np.int32),
+    np.array([[1243, 10], [1243, 60], [2107, 56], [2111, 10]], dtype=np.int32)
 ]
+
 
 
 # ─────────────────────────────
