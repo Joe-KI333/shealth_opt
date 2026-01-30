@@ -19,15 +19,28 @@ st.write("**Masking1** and **Masking2** polygon configurations.")
 # ─────────────────────────────
 # Polygon References
 # ─────────────────────────────
+# POLYGONS_MASKING_1 = [
+#     np.array([[1494, 11], [1494, 78], [281, 83], [281, 3]], dtype=np.int32),
+#     np.array([[1768, 21], [1773, 93], [2984, 88], [2984, 10]], dtype=np.int32)
+# ]
+
+# POLYGONS_MASKING_2 = [
+#     np.array([[391, 27], [2143, 23], [2143, 111], [399, 107]], dtype=np.int32),
+#     np.array([[2526, 23], [2530, 107], [4273, 115], [4265, 6]], dtype=np.int32)
+# ]
+
+# POLYGONS_MASKING_1 → test ff ratio
 POLYGONS_MASKING_1 = [
-    np.array([[1494, 11], [1494, 78], [281, 83], [281, 3]], dtype=np.int32),
-    np.array([[1768, 21], [1773, 93], [2984, 88], [2984, 10]], dtype=np.int32)
+    np.array([[87, 4], [478, 1], [476, 23], [85, 27]], dtype=np.int32),
+    np.array([[564, 5], [564, 30], [951, 30], [955, 1]], dtype=np.int32)
 ]
 
+# POLYGONS_MASKING_2 → test oct ratio
 POLYGONS_MASKING_2 = [
-    np.array([[391, 27], [2143, 23], [2143, 111], [399, 107]], dtype=np.int32),
-    np.array([[2526, 23], [2530, 107], [4273, 115], [4265, 6]], dtype=np.int32)
+    np.array([[685, 1], [682, 36], [126, 36], [126, 4]], dtype=np.int32),
+    np.array([[807, 2], [807, 36], [1361, 36], [1361, 5]], dtype=np.int32)
 ]
+
 
 # ─────────────────────────────
 # Session State Init
